@@ -41,7 +41,7 @@ export async function POST() {
       // Filter text channels and apply ignore list
       const textChannels = channelsResponse.data.filter((channel: any) => 
         channel.type === 0 && 
-        (server.scanAllChannels || !server.ignoredChannels.includes(channel.id))
+        (server.scanAllChannels || !JSON.parse(server.ignoredChannels || '[]').includes(channel.id))
       )
 
       // Process each channel (limit to 3 for demo)
@@ -125,7 +125,7 @@ export async function POST() {
             update: {
               summary: analysis.summary || 'No significant activity',
               importance: analysis.importance || 5,
-              topics: analysis.topics || [],
+              topics: JSON.stringify(analysis.topics || []),
               messageCount: messagesResponse.data.length,
               hasThreads,
               lastActivityAt: messagesResponse.data[0]?.timestamp || new Date()
@@ -137,7 +137,7 @@ export async function POST() {
               channelName: channel.name,
               summary: analysis.summary || 'No significant activity',
               importance: analysis.importance || 5,
-              topics: analysis.topics || [],
+              topics: JSON.stringify(analysis.topics || []),
               messageCount: messagesResponse.data.length,
               hasThreads,
               lastActivityAt: messagesResponse.data[0]?.timestamp || new Date(),

@@ -16,7 +16,13 @@ export async function GET() {
       orderBy: { createdAt: 'desc' }
     })
 
-    return NextResponse.json(servers)
+    // Parse JSON strings for array fields
+    const parsedServers = servers.map(server => ({
+      ...server,
+      ignoredChannels: JSON.parse(server.ignoredChannels || '[]')
+    }))
+
+    return NextResponse.json(parsedServers)
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch servers' }, { status: 500 })
   }
@@ -54,7 +60,7 @@ export async function POST(request: NextRequest) {
         serverName,
         serverIcon,
         scanAllChannels,
-        ignoredChannels: ignoredChannels || []
+        ignoredChannels: JSON.stringify(ignoredChannels || [])
       }
     })
 

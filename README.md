@@ -4,7 +4,7 @@ AI-powered Discord monitoring platform that helps you stay on top of important c
 
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791)
+![SQLite](https://img.shields.io/badge/SQLite-3-003b57)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991)
 
 ## ✨ Features
@@ -22,7 +22,6 @@ AI-powered Discord monitoring platform that helps you stay on top of important c
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database ([Supabase](https://supabase.com) free tier works great)
 - [Discord Application](https://discord.com/developers/applications)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
@@ -45,10 +44,11 @@ cp .env.example .env.local
 ```
 
 Edit `.env.local` with your credentials:
-- Database URL from Supabase/Vercel
 - Discord OAuth credentials
 - OpenAI API key
 - Generate a random NextAuth secret
+
+The database will be automatically created as `dev.db` in the project root.
 
 4. **Initialize database**
 ```bash

@@ -28,11 +28,12 @@ export async function GET() {
       ]
     })
 
-    // Transform data to include server info at top level
+    // Transform data to include server info at top level and parse JSON strings
     const transformedSummaries = summaries.map(summary => ({
       ...summary,
       serverName: summary.server.serverName,
-      serverIcon: summary.server.serverIcon
+      serverIcon: summary.server.serverIcon,
+      topics: JSON.parse(summary.topics || '[]')
     }))
 
     return NextResponse.json(transformedSummaries)

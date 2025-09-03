@@ -9,7 +9,7 @@ A multi-user Discord monitoring platform built with Next.js 14, featuring AI-pow
 ### Tech Stack
 - **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS, Framer Motion
 - **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: PostgreSQL (Supabase/Vercel Postgres compatible)
+- **Database**: SQLite for local hosting
 - **Authentication**: NextAuth.js with Discord OAuth
 - **AI**: OpenAI GPT-3.5-turbo
 - **Deployment**: Vercel with Cron Jobs
@@ -26,6 +26,8 @@ A multi-user Discord monitoring platform built with Next.js 14, featuring AI-pow
 
 ### Core Models
 
+**Note**: Array fields (`ignoredChannels`, `topics`) are stored as JSON strings in SQLite to maintain compatibility. The API endpoints automatically handle JSON serialization/deserialization.
+
 ```prisma
 User
 ├── accounts (OAuth accounts)
@@ -37,14 +39,14 @@ User
 MonitoredServer
 ├── serverId (Discord server ID)
 ├── scanAllChannels (boolean)
-├── ignoredChannels (array)
+├── ignoredChannels (array stored as JSON string)
 └── lastScannedAt (timestamp)
 
 ChannelSummary
 ├── channelId (Discord channel ID)
 ├── summary (AI-generated text)
 ├── importance (1-10 score)
-├── topics (detected topics array)
+├── topics (detected topics array stored as JSON string)
 ├── isRead (boolean)
 └── lastActivityAt (timestamp)
 
@@ -107,7 +109,7 @@ Four response types are generated for each summary:
 
 ```env
 # Database
-DATABASE_URL - PostgreSQL connection string
+DATABASE_URL - SQLite database file path
 
 # NextAuth
 NEXTAUTH_URL - Application URL
@@ -174,7 +176,7 @@ npx prisma migrate reset
 
 ### Production Checklist
 
-- [ ] Set up PostgreSQL database (Supabase/Vercel Postgres)
+- [ ] Set up environment variables from `.env.example`
 - [ ] Configure all environment variables
 - [ ] Update Discord OAuth redirect URI
 - [ ] Generate secure NEXTAUTH_SECRET
@@ -184,10 +186,11 @@ npx prisma migrate reset
 
 ## Performance Optimizations
 
-1. **Database Queries**
+1. **Database Configuration**
    - Indexed on userId, isRead, serverId
    - Compound unique constraints prevent duplicates
    - Efficient relationship loading with Prisma includes
+   - SQLite file-based storage for easy local hosting
 
 2. **API Rate Limiting**
    - Discord: Respects global rate limits
@@ -231,8 +234,8 @@ npx prisma migrate reset
 
 3. **Database connection errors**
    - Verify DATABASE_URL format
-   - Check network/firewall settings
-   - Ensure SSL mode if required
+   - Check file permissions for SQLite database
+   - Ensure database file directory exists
 
 ### Debug Mode
 
