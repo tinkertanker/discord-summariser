@@ -1,24 +1,28 @@
-# Discord AI Summary
+# Discord Monitor
 
-A lightweight web app that connects to Discord and provides AI-powered summaries of channels, helping you quickly catch up on important discussions and identify channels that need attention.
+A multi-user web platform for Discord channel monitoring with AI-powered summaries and response suggestions.
 
 ## Features
 
-- **Discord OAuth Integration**: Secure login with your Discord account
-- **AI-Powered Summaries**: Uses OpenAI to analyze and summarize channel activity
-- **Smart Importance Scoring**: Automatically rates channel importance (1-10 scale)
-- **Topic Detection**: Identifies key topics discussed in each channel
-- **Custom Filters**: Filter by your topics of interest or importance threshold
-- **Thread Detection**: Shows which channels have active threads
-- **Quick Navigation**: Jump directly to channels in Discord app
-- **Local Preferences**: All settings stored locally in browser
+- **Multi-User Support**: Individual accounts with personal Discord connections
+- **Server Management**: Add/remove Discord servers to monitor
+- **Channel Configuration**: Choose which channels to scan or ignore
+- **AI-Powered Summaries**: Automatic summarization with importance scoring
+- **Suggested Responses**: AI-generated response options you can edit
+- **Bulk Actions**: Mark multiple channels as read at once
+- **Read/Unread Tracking**: Keep track of what you've reviewed
+- **Discord Web Links**: Jump directly to channels in Discord web app
+- **Background Scanning**: Automatic periodic scanning (every 6 hours)
+- **Real-time Updates**: Manual scan button for immediate updates
 
 ## Tech Stack
 
-- **Frontend**: Vanilla JavaScript, HTML5, CSS3
-- **Backend**: Minimal Node.js serverless functions (Vercel)
-- **APIs**: Discord API, OpenAI API
-- **Deployment**: Vercel (serverless)
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL (Supabase/Vercel Postgres)
+- **Authentication**: NextAuth.js with Discord OAuth
+- **AI**: OpenAI GPT-3.5 for summaries and responses
+- **Deployment**: Vercel with Cron Jobs
 
 ## Setup Instructions
 
@@ -37,12 +41,21 @@ A lightweight web app that connects to Discord and provides AI-powered summaries
 2. Create a new API key
 3. Copy the key (starts with `sk-`)
 
-### 3. Local Development Setup
+### 3. Database Setup
+
+1. Create a PostgreSQL database (options):
+   - **Supabase**: Create a free project at [supabase.com](https://supabase.com)
+   - **Vercel Postgres**: Use Vercel's managed PostgreSQL
+   - **Local**: Use a local PostgreSQL instance
+
+2. Get your database connection string
+
+### 4. Local Development Setup
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd discord-ai-summary
+git clone https://github.com/tinkertanker/discord-summariser.git
+cd discord-summariser
 ```
 
 2. Install dependencies:
@@ -50,28 +63,40 @@ cd discord-ai-summary
 npm install
 ```
 
-3. Create `.env` file from template:
+3. Create `.env.local` file from template:
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-4. Edit `.env` with your credentials:
+4. Edit `.env.local` with your credentials:
 ```env
-DISCORD_CLIENT_ID=your_discord_client_id
-DISCORD_CLIENT_SECRET=your_discord_client_secret
-DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/callback
-OPENAI_API_KEY=your_openai_api_key
-APP_URL=http://localhost:3000
+DATABASE_URL="postgresql://user:password@host:5432/dbname"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate-a-random-secret-here"
+DISCORD_CLIENT_ID="your_discord_client_id"
+DISCORD_CLIENT_SECRET="your_discord_client_secret"
+OPENAI_API_KEY="sk-your-openai-api-key"
+CRON_SECRET="your-cron-secret"
 ```
 
-5. Run development server:
+5. Push database schema:
+```bash
+npx prisma db push
+```
+
+6. Generate Prisma client:
+```bash
+npx prisma generate
+```
+
+7. Run development server:
 ```bash
 npm run dev
 ```
 
-6. Open http://localhost:3000 in your browser
+8. Open http://localhost:3000 in your browser
 
-### 4. Vercel Deployment
+### 5. Vercel Deployment
 
 1. Install Vercel CLI:
 ```bash
@@ -92,21 +117,28 @@ vercel
 
 ## Usage Guide
 
-1. **Login**: Click "Login with Discord" to authenticate
-2. **Configure Settings**:
-   - Add topics you're interested in (comma-separated)
-   - Set importance threshold (1-10)
-   - Add your OpenAI API key (stored locally)
-3. **Select Server**: Click on any server to analyze its channels
-4. **View Summaries**: 
-   - See AI-generated summaries of recent activity
-   - Check importance ratings
-   - View detected topics
-5. **Filter Results**:
-   - All: Show all channel summaries
-   - Important: Show only channels above threshold
-   - My Topics: Show channels matching your interests
-6. **Navigate**: Click "Open in Discord" to jump directly to a channel
+1. **Login**: Click "Sign in with Discord" to authenticate
+2. **Add Servers**:
+   - Click the "+" button in the sidebar
+   - Select servers you want to monitor
+   - Configure channel preferences (scan all or select specific channels)
+3. **View Summaries**:
+   - Dashboard shows all channel summaries
+   - Filter by All/Unread/Important
+   - Click server names in sidebar to filter by server
+4. **Manage Summaries**:
+   - Mark individual summaries as read
+   - Use "Mark All Read" for bulk actions
+   - Click "Open in Discord" to jump to the channel
+5. **Generate Responses**:
+   - Click "Generate Response" on any summary
+   - Get 4 AI-suggested responses (Acknowledge, Question, Answer, Follow-up)
+   - Edit responses before copying
+   - Click copy icon to copy to clipboard
+   - Click external link to open Discord with response copied
+6. **Manual Scanning**:
+   - Click "Scan Now" to immediately scan all active servers
+   - Background scans run automatically every 6 hours
 
 ## API Rate Limits
 

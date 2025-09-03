@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  image           String?
+  discordId       String?          @unique
+  discordToken    String?
+  refreshToken    String?
+  tokenExpiresAt  DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  accounts        Account[]
+  sessions        Session[]
+  monitoredServers MonitoredServer[]
+  summaries       ChannelSummary[]
+  responses       SuggestedResponse[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model MonitoredServer {
+  id               String   @id @default(cuid())
+  userId           String
+  serverId         String
+  serverName       String
+  serverIcon       String?
+  isActive         Boolean  @default(true)
+  scanAllChannels  Boolean  @default(true)
+  ignoredChannels  String[] @default([])
+  lastScannedAt    DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  summaries        ChannelSummary[]
+  
+  @@unique([userId, serverId])
+  @@index([userId])
+}
+
+model ChannelSummary {
+  id               String   @id @default(cuid())
+  userId           String
+  serverId         String
+  channelId        String
+  channelName      String
+  summary          String
+  importance       Int      @default(5)
+  topics           String[] @default([])
+  messageCount     Int      @default(0)
+  hasThreads       Boolean  @default(false)
+  isRead           Boolean  @default(false)
+  lastActivityAt   DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  server           MonitoredServer @relation(fields: [serverId, userId], references: [serverId, userId], onDelete: Cascade)
+  responses        SuggestedResponse[]
+  
+  @@unique([userId, channelId, createdAt])
+  @@index([userId, isRead])
+  @@index([serverId])
+}
+
+model SuggestedResponse {
+  id               String   @id @default(cuid())
+  userId           String
+  summaryId        String
+  responseType     ResponseType
+  suggestedText    String
+  editedText       String?
+  isUsed           Boolean  @default(false)
+  usedAt           DateTime?
+  createdAt        DateTime @default(now())
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  summary          ChannelSummary @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([summaryId])
+}
+
+enum ResponseType {
+  ACKNOWLEDGMENT
+  QUESTION
+  ANSWER
+  FOLLOW_UP
+  CUSTOM
+}

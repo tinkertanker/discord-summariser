@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-discord-dark text-gray-100;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-discord-blurple hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-discord-darker hover:bg-discord-darkest text-gray-200 px-4 py-2 rounded-md transition-colors border border-gray-600;
+  }
+  
+  .btn-success {
+    @apply bg-discord-green hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .btn-danger {
+    @apply bg-discord-red hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .card {
+    @apply bg-discord-darker rounded-lg p-4 border border-gray-700;
+  }
+  
+  .input {
+    @apply bg-discord-darkest border border-gray-600 rounded-md px-3 py-2 text-gray-100 focus:outline-none focus:border-discord-blurple;
+  }
+}
